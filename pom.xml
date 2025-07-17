@@ -11,8 +11,15 @@
     <groupId>org.example</groupId>
     <artifactId>spring-ai-learn</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
     <name>spring-ai-learn</name>
     <description>spring-ai-learn</description>
+    <modules>
+        <module>spring-ai-chat</module>
+        <module>spring-ai-rag</module>
+        <module>spring-ai-vector</module>
+        <module>spring-ai-chat-memory</module>
+    </modules>
 
     <properties>
         <java.version>21</java.version>

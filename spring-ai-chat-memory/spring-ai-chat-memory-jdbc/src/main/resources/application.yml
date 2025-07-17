@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: spring-ai-chat-memory-jdbc
+  ai:
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+#        model: deepseek-r1:8b
+        model: qwen2.5:7b
+    chat:
+      memory:
+        repository:
+          jdbc:
+            initialize-schema: always # 是否初始化数据库表结构
+            schema: classpath:schema-@@platform@@.sql # 表结构脚本路径
+            platform: mysql # 数据库类型（平台标识）
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: S0000masen
+    url: jdbc:mysql://localhost:3306/spring_ai_chat_memory?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+
+server:
+  port: 8083
