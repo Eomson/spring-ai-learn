@@ -19,6 +19,8 @@
         <module>spring-ai-rag</module>
         <module>spring-ai-vector</module>
         <module>spring-ai-chat-memory</module>
+        <module>spring-ai-agent</module>
+        <module>spring-ai-agent/spring-ai-workflow</module>
     </modules>
 
     <properties>
