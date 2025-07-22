@@ -9,6 +9,6 @@ spring:
         options:
           temperature: 0.5
   profiles:
-    active: ollama
+    active: ollama # 激活的配置文件
 server:
   port: 8081
