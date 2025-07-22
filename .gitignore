@@ -18,7 +18,7 @@ target/
 *.iws
 *.iml
 *.ipr
-token.txt
+t.txt
 
 ### NetBeans ###
 /nbproject/private/

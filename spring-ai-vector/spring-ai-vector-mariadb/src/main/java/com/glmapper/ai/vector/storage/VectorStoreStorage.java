@@ -1,27 +1,31 @@
-package vector.storage;
+package com.glmapper.ai.vector.storage;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
- * @Classname VectorStoreStorage
- * @Description VectorStoreStorage
- * @Date 2025/6/7 15:31
- * @Created by glmapper
+ * @ClassName VectorStoreStorage
+ * @Description TODO
+ * @Author masen.27
+ * @Date 2025/7/22 13:24
+ * @Version 1.0
  */
 @Component
+@RequiredArgsConstructor
 public class VectorStoreStorage {
 
-    @Autowired
-    private VectorStore vectorStore;
+    private final VectorStore vectorStore;
 
-    public void delete(List<String> idList) {
-        vectorStore.delete(idList);
+
+    public void delete(Set<String> ids) {
+        vectorStore.delete(new ArrayList<>(ids));
     }
 
     public void store(List<Document> documents) {
@@ -32,10 +36,6 @@ public class VectorStoreStorage {
     }
 
     public List<Document> search(String query) {
-        return vectorStore.similaritySearch(SearchRequest.builder()
-                .query(query)
-                .topK(5)
-                .similarityThreshold(0.7)
-                .build());
+        return vectorStore.similaritySearch(SearchRequest.builder().query(query).topK(5).build());
     }
 }
