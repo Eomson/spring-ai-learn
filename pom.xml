@@ -21,6 +21,7 @@
         <module>spring-ai-chat-memory</module>
         <module>spring-ai-agent</module>
         <module>spring-ai-agent/spring-ai-workflow</module>
+        <module>spring-ai-evaluation</module>
     </modules>
 
     <properties>
