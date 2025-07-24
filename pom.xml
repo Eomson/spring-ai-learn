@@ -22,6 +22,7 @@
         <module>spring-ai-agent</module>
         <module>spring-ai-agent/spring-ai-workflow</module>
         <module>spring-ai-evaluation</module>
+        <module>spring-ai-tool-calling</module>
     </modules>
 
     <properties>
