@@ -1,0 +1,66 @@
+# 这份配置文件的核心作用是告诉 MCP 客户端 “如何连接外部服务” 以及 “如何与服务交互”：
+#   1.加载阶段：Spring 通过配置绑定机制将 YAML 转换为 Java 对象，注入到 MCP 客户端组件中。
+#   2.运行阶段：客户端根据配置启动 / 连接外部服务，注册工具能力，并在 AI 调用工具时按配置的通信方式（sse/stdio）和交互模式（sync）完成指令转发与结果返回
+spring:
+  ai:
+    mcp:
+      client:
+        toolcallback:
+          # 自动回调处理：当 AI 模型生成工具调用指令时，客户端会根据指令中的 tool 名称（如 mysql）找到对应的服务配置，通过 StdioClientTransport 或 SseClientTransport 转发指令，并将结果回传给 AI 模型（形成 “模型→工具→模型” 的闭环）
+          # 收集服务能力：连接外部服务后，客户端会获取每个服务的 “能力清单”（如 mysql 服务支持 query、insert 等操作，filesystem 支持 read、write 等），并注册到 AI 模型的 “可用工具列表” 中
+          enabled: true
+        # 启动 / 连接外部服务：
+        # 对 stdio 类型的服务（mysql、filesystem、amap-maps）：
+        # 自动执行 command 命令（如 npx mysql-mcp-server），启动对应的 Node.js 服务（这些服务是实现了 MCP 协议的工具，能理解 AI 的指令）。
+        # 同时通过 env 传递必要参数（如数据库密码、高德 API 密钥）。
+        # 对 sse 类型的服务（weather-mcp-server）：
+        # 主动连接到指定的 URL（http://127.0.0.1:8081），与已启动的外部 MCP 服务建立长连接。
+        # see 方式  -- 链接实际使用的工具
+        sse: # 用于连接独立部署的 MCP 服务（如远程天气服务），通过 HTTP 长连接通信
+          connections:
+            # MCP Server名称，自己随便取
+            weather-mcp-server:
+              # url 根据 MCP Server 配置调整  该 MCP 服务的地址--自己本地写的
+              url: "http://127.0.0.1:8081"
+        # stdio 方式 -- 链接实际使用的工具
+        stdio: # 用于启动本地工具服务（如 mysql、filesystem），通过进程的标准输入输出通信，更适合本地开发
+          connections:
+            # 作用：让 AI 模型能够通过自然语言指令操作 MySQL 数据库（如查询数据、插入记录等），无需手动编写 SQL
+            mysql:  # npx mysql-mcp-server 到时候直接执行
+              command: "npx" # 用npx（Node.js包执行工具）启动服务
+              args:
+                # mcp server名称
+                - "mysql-mcp-server"
+              env: # 数据库连接参数（环境变量形式传递给服务）
+                # 数据库ip
+                "MYSQL_HOST": "127.0.0.1"
+                # 数据库服务端口
+                "MYSQL_PORT": "3306"
+                # 数据库用户名
+                "MYSQL_USER": "root"
+                # 数据库密码
+                "MYSQL_PASSWORD": "S0000masen"
+                # 数据库名称
+                "MYSQL_DATABASE": "spring_ai_chat_memory" # 替换为你的数据库名称
+            filesystem:
+              # Windows 操作系统使用 npx.cmd，Linux 和 MacOS 使用 npx
+              command: "npx"
+              args:
+                - "-y"  # 自动确认安装依赖
+                - "@modelcontextprotocol/server-filesystem" # 处理文件操作的MCP服务
+                # # 操作的目标文件夹路径
+                - "/Users/masen.27/IdeaProjects/spring-ai-learn/spring-ai-mcp/mcp-client/src/main/resources"
+            # 作用：让 AI 模型能够发送网络请求（如调用第三方 API、爬取网页内容等），获取互联网上的实时数据
+#            "fetch": {
+#                command: "uvx", # 用uvx（Python包执行工具）启动
+#                "args": [ "mcp-server-fetch" ] # 处理HTTP请求的MCP服务
+#            }
+            "amap-maps": {
+              "command": "npx",
+              "args": [ "-y", "@amap/amap-maps-mcp-server" ], # 高德地图的MCP服务
+              "env": {
+                "AMAP_MAPS_API_KEY": "5e0d2d4aacbd8f19e2325c8dac2c14d0" # 替换为你的高德地图API密钥
+              }
+            }
+        type: sync # 指定 MCP 客户端与外部服务的交互模式为同步。即 AI 模型调用工具后，会等待工具返回结果，再继续处理和生成响应（适合需要实时结果的场景）
+

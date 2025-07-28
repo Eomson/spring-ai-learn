@@ -1,0 +1,12 @@
+spring:
+  ai:
+    mcp:
+      server:
+        name: "mcp-server-weather"
+        version: "0.0.1"
+server:
+  port: 8081
+
+#  网络模式 + Web 应用）：
+#  适合作为独立部署的服务，可被本地或远程的 MCP 客户端通过网络调用（如你配置中的 weather-mcp-server）。
+#  客户端通过 sse 方式连接 http://127.0.0.1:8081 与其通信，适合需要跨进程或跨机器共享的服务（如天气查询服务）。

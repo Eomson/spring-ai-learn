@@ -1,0 +1,13 @@
+spring:
+  ai:
+    mcp:
+      server:
+        name: "weather-mcp-server" # 仅作为标识，无强制命名规则
+        version: "0.0.1"
+        stdio: true #表示该 MCP 服务器是一个本地进程内服务，通过标准输入（stdin）接收客户端指令，通过标准输出（stdout）返回结果，不启动网络端口
+  main:
+    web-application-type: none # 明确指定为非 Web 应用：不启动嵌入式服务器（如 Tomcat），仅作为控制台进程运行
+
+#  （stdio 模式 + 非 Web 应用）：
+#  适合作为本地工具服务，与 MCP 客户端运行在同一台机器，通过进程通信（如你配置中的 mysql、filesystem 服务）。
+#  客户端通过 stdio 方式直接启动并调用该服务，无需网络连接
